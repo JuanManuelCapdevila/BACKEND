@@ -12,17 +12,35 @@ with app.app_context():
     db.create_all()
 
 # Ruta para configurar el problema
-@app.route('/config', methods=['POST', 'GET'])
+@app.route('/config', methods=['GET', 'PUT', 'POST'])
 def config():
-    if request.method == 'POST':
+    if request.method == 'GET':
+        # Obtener la configuración actual
+        config = Config.query.first()
+        if config:
+            return jsonify(config.to_dict()), 200
+        else:
+            return jsonify({'message': 'No existe una configuración establecida'}), 404
+
+    elif request.method == 'PUT':
+        # Actualizar la configuración existente
         data = request.get_json()
-        config = Config(**data)
-        db.session.add(config)
+        config = Config.query.first()
+        if config:
+            for key, value in data.items():
+                setattr(config, key, value)
+            db.session.commit()
+            return jsonify({'message': 'Configuración actualizada'}), 200
+        else:
+            return jsonify({'message': 'No existe una configuración para modificar'}), 404
+
+    elif request.method == 'POST':
+        # Crear una nueva configuración
+        data = request.get_json()
+        new_config = Config(**data)
+        db.session.add(new_config)
         db.session.commit()
-        return jsonify({'message': 'Configuración guardada'}), 201
-    else:
-        configs = Config.query.all()
-        return jsonify([config.to_dict() for config in configs]), 200
+        return jsonify({'message': 'Configuración creada exitosamente'}), 201
 
 # Ruta para agregar nodos a una configuración
 @app.route('/optimization', methods=['POST'])
@@ -40,7 +58,6 @@ def cvrptw():
             demanda=node_data['demanda'],
             tiempoInicio=node_data['tiempoInicio'],
             tiempoFin=node_data['tiempoFin'],
-            servicioDuración=node_data['servicioDuración']
         )
         nodes.append(node)
 

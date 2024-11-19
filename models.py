@@ -3,8 +3,8 @@ from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
 
 class Config(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    maxVehicles = db.Column(db.Integer)
+    id = db.Column(db.Integer, primary_key=True, default=1)
+    amountVehicles = db.Column(db.Integer)
     capacity = db.Column(db.Integer)
     depotx = db.Column(db.Float)
     depoty = db.Column(db.Float)
@@ -18,5 +18,4 @@ class Node(db.Model):
     demanda = db.Column(db.Integer)
     tiempoInicio = db.Column(db.Integer)
     tiempoFin = db.Column(db.Integer)
-    servicioDuración = db.Column(db.Integer)
     config = db.relationship('Config', backref=db.backref('nodes', lazy=True))
