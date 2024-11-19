@@ -1,0 +1,67 @@
+Documentación del Backend VRPTW (Flask)
+
+Este documento describe el backend de una aplicación VRPTW (Vehicle Routing Problem with Time Windows) implementada con Flask y SQLAlchemy.
+Funcionalidades
+
+    Configuración:
+        Permite obtener, actualizar y crear una configuración única para el problema VRPTW.
+        La configuración define parámetros como la cantidad de vehículos, capacidad, coordenadas del depósito y horizonte de planificación.
+    Nodos:
+        Permite agregar nodos a la configuración.
+        Los nodos representan ubicaciones con una demanda, tiempo de inicio y tiempo final de servicio.
+
+Modelos de Datos
+
+    Config:
+        id (Integer, primary key): Identificador único de la configuración (fijo en 1).
+        amountVehicles (Integer): Cantidad de vehículos disponibles.
+        capacity (Integer): Capacidad de carga de los vehículos.
+        depotx (Float): Coordenada X del depósito.
+        depoty (Float): Coordenada Y del depósito.
+        horizon (Integer): Horizonte de planificación (tiempo máximo).
+    Node:
+        id (Integer, primary key): Identificador único del nodo.
+        config_id (Integer, foreign key): Identificador de la configuración a la que pertenece el nodo.
+        latitud (Float): Coordenada de latitud del nodo.
+        longitud (Float): Coordenada de longitud del nodo.
+        demanda (Integer): Demanda del nodo (cantidad a recoger o entregar).
+        tiempoInicio (Integer): Tiempo mínimo de inicio del servicio en el nodo.
+        tiempoFin (Integer): Tiempo máximo de finalización del servicio en el nodo.
+        config (relationship): Relación con el modelo Config (un nodo pertenece a una configuración).
+
+Endpoints API (Flask)
+
+    /config (GET, PUT, POST):
+        GET: Obtiene la configuración actual.
+        PUT: Actualiza la configuración existente.
+        POST: Crea una nueva configuración.
+    /optimization (POST):
+        Recibe un conjunto de nodos y su configuración asociada (config_id) para su posterior procesamiento y optimización del VRPTW (la optimización no está implementada en este ejemplo).
+
+Código fuente
+
+El código fuente se encuentra en dos archivos:
+
+    app.py: Contiene la aplicación Flask, configuración de la base de datos, rutas API y lógica de negocio.
+    models.py: Define los modelos de datos (Config y Node) utilizando SQLAlchemy.
+
+Nota: La función auxiliar to_dict en models.py se utiliza para serializar los objetos de modelo a diccionarios para la respuesta de la API.
+Ejecución
+
+Para ejecutar la aplicación:
+
+    Instale las dependencias: pip install Flask Flask-SQLAlchemy
+    Cree la base de datos ejecutando la aplicación con el modo debug: python app.py
+
+Observaciones
+
+    Este código proporciona una base para el backend VRPTW. La implementación del algoritmo de optimización VRPTW no está incluida.
+    Se recomienda validar los datos de entrada en las rutas API para garantizar la integridad de los datos.
+    La implementación actual permite una única configuración. Puedes explorar alternativas para permitir configuraciones múltiples si es necesario.
+    Considera agregar documentación para la función de optimización una vez implementada.
+
+Siguientes pasos
+
+    Implementar la lógica de optimización VRPTW utilizando un algoritmo adecuado (por ejemplo, Clarke-Wright o genéticos).
+    Desarrollar el frontend para interactuar con la API y visualizar los resultados.
+    Implementar la validación de datos en las rutas API.
